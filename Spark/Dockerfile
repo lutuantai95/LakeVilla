@@ -1,4 +1,6 @@
-FROM python:3.9-bullseye
+# Debian 11 (bullseye) left LTS in 2026 and its security pool is being pruned,
+# so the image is on bookworm, which ships Java 17 rather than 11.
+FROM python:3.9-bookworm
 
 RUN apt-get -qq update && \
     apt-get -qq install -y --no-install-recommends \
@@ -6,12 +8,12 @@ RUN apt-get -qq update && \
       curl \
       vim \
       unzip \
-      openjdk-11-jdk \
+      openjdk-17-jdk \
       build-essential \
       software-properties-common \
       wget \
       rsync \
-      netcat \
+      netcat-openbsd \
       maven \
       ssh && \
     apt-get -qq clean && \

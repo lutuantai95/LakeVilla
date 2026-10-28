@@ -1,0 +1,40 @@
+# x86_64 build of the lakevilla container. Unlike ./Dockerfile it ships no
+# prebuilt (aarch64) binaries: LakeVilla is compiled from the mounted ./src
+# with build.sh, against the current Apache Arrow release.
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# FindJNI needs AWT, which the -headless JDK does not ship.
+RUN apt-get -qq update && \
+    apt-get -qq install -y --no-install-recommends \
+      build-essential cmake ninja-build git ca-certificates lsb-release wget \
+      libcurl4-openssl-dev libssl-dev zlib1g-dev libjsoncpp-dev openjdk-11-jdk && \
+    wget -q https://packages.apache.org/artifactory/arrow/ubuntu/apache-arrow-apt-source-latest-noble.deb && \
+    apt-get -qq install -y ./apache-arrow-apt-source-latest-noble.deb && \
+    rm apache-arrow-apt-source-latest-noble.deb && \
+    apt-get -qq update && \
+    apt-get -qq install -y --no-install-recommends libparquet-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+ARG AWS_SDK_VERSION=1.11.918
+RUN git clone -q --depth 1 --branch ${AWS_SDK_VERSION} --recurse-submodules --shallow-submodules \
+      https://github.com/aws/aws-sdk-cpp.git /tmp/aws-src && \
+    cmake -S /tmp/aws-src -B /tmp/aws-build -G Ninja -DCMAKE_INSTALL_PREFIX=/LakeVilla/aws \
+      -DBUILD_ONLY=s3 -DBUILD_SHARED_LIBS=ON -DENABLE_UNITY_BUILD=ON -DCMAKE_BUILD_TYPE=Release \
+      -DENABLE_TESTING=OFF -DAUTORUN_UNIT_TESTS=OFF && \
+    cmake --build /tmp/aws-build && cmake --install /tmp/aws-build && \
+    rm -rf /tmp/aws-src /tmp/aws-build
+
+ENV LD_LIBRARY_PATH=/LakeVilla/aws/lib
+
+WORKDIR /LakeVilla
+
+COPY lvconfig.conf .
+COPY additional_workloads ./additional_workloads
+COPY CAB ./CAB
+COPY congestion ./congestion
+COPY build.sh .
+RUN chmod +x build.sh
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

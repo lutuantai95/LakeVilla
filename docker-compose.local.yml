@@ -1,0 +1,26 @@
+# Local x86_64 overrides for docker-compose.yml:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+#
+# - lakevilla is built for amd64 from source (LV/Dockerfile.local) instead of
+#   shipping the prebuilt aarch64 binaries.
+# - No ports are published: the containers reach each other over lakevillaNet,
+#   and the host ports (80, 9000, 8080, ...) are often already taken.
+
+services:
+  lakevilla:
+    build:
+      context: ./LV
+      dockerfile: Dockerfile.local
+    platform: linux/amd64
+    volumes:
+      - ./LV/src:/LakeVilla/src
+      - lakevilla-build:/LakeVilla/build
+  spark-delta3:
+    ports: !reset []
+  hive:
+    ports: !reset []
+  minio:
+    ports: !reset []
+
+volumes:
+  lakevilla-build:

@@ -9,22 +9,23 @@ std::string LHHelpers::readParquet(const char* data, uint64_t length) {
 
   arrow::MemoryPool* pool = arrow::default_memory_pool();
 
-  std::unique_ptr<parquet::arrow::FileReader> arrow_reader;
   auto status = parquet::arrow::FileReader::Make(
-      pool, parquet::ParquetFileReader::Open(reader), &arrow_reader);
+      pool, parquet::ParquetFileReader::Open(reader));
 
   if (!status.ok()) {
-    std::cerr << "ARROW: Error opening Parquet file: " << status.ToString()
-              << std::endl;
+    std::cerr << "ARROW: Error opening Parquet file: "
+              << status.status().ToString() << std::endl;
     return {};
   }
+  std::unique_ptr<parquet::arrow::FileReader> arrow_reader =
+      std::move(status).ValueUnsafe();
 
-  std::shared_ptr<arrow::Table> table;
-  auto status2 = arrow_reader->ReadTable(&table);
+  auto status2 = arrow_reader->ReadTable();
   if (!status2.ok()) {
     std::cerr << "ARROW: Error reading parquet" << std::endl;
     return {};
   }
+  std::shared_ptr<arrow::Table> table = std::move(status2).ValueUnsafe();
 
   auto schema = table->schema();
 
@@ -158,22 +159,23 @@ std::shared_ptr<arrow::Table> LHHelpers::readParquetAsTable(const char* data,
 
   arrow::MemoryPool* pool = arrow::default_memory_pool();
 
-  std::unique_ptr<parquet::arrow::FileReader> arrow_reader;
   auto status = parquet::arrow::FileReader::Make(
-      pool, parquet::ParquetFileReader::Open(reader), &arrow_reader);
+      pool, parquet::ParquetFileReader::Open(reader));
 
   if (!status.ok()) {
-    std::cerr << "ARROW: Error opening Parquet file: " << status.ToString()
-              << std::endl;
+    std::cerr << "ARROW: Error opening Parquet file: "
+              << status.status().ToString() << std::endl;
     return {};
   }
+  std::unique_ptr<parquet::arrow::FileReader> arrow_reader =
+      std::move(status).ValueUnsafe();
 
-  std::shared_ptr<arrow::Table> table;
-  auto status2 = arrow_reader->ReadTable(&table);
+  auto status2 = arrow_reader->ReadTable();
   if (!status2.ok()) {
     std::cerr << "ARROW: Error reading parquet" << std::endl;
     return {};
   }
+  std::shared_ptr<arrow::Table> table = std::move(status2).ValueUnsafe();
 
   return table;
 }
@@ -186,22 +188,23 @@ std::vector<std::string> LHHelpers::readDLCheckpoint(const char* data,
 
   arrow::MemoryPool* pool = arrow::default_memory_pool();
 
-  std::unique_ptr<parquet::arrow::FileReader> arrow_reader;
   auto status = parquet::arrow::FileReader::Make(
-      pool, parquet::ParquetFileReader::Open(reader), &arrow_reader);
+      pool, parquet::ParquetFileReader::Open(reader));
 
   if (!status.ok()) {
-    std::cerr << "ARROW: Error opening Parquet file: " << status.ToString()
-              << std::endl;
+    std::cerr << "ARROW: Error opening Parquet file: "
+              << status.status().ToString() << std::endl;
     return {};
   }
+  std::unique_ptr<parquet::arrow::FileReader> arrow_reader =
+      std::move(status).ValueUnsafe();
 
-  std::shared_ptr<arrow::Table> table;
-  auto status2 = arrow_reader->ReadTable(&table);
+  auto status2 = arrow_reader->ReadTable();
   if (!status2.ok()) {
     std::cerr << "ARROW: Error reading parquet" << std::endl;
     return {};
   }
+  std::shared_ptr<arrow::Table> table = std::move(status2).ValueUnsafe();
 
   auto add =
       std::static_pointer_cast<arrow::StructArray>(table->column(1)->chunk(0))
