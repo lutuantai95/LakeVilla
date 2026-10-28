@@ -1,18 +1,18 @@
 [submodule "YCSB-LH"]
 	path = YCSB-LH
-	url = https://github.com/goetztj/YCSB-LH
+	url = https://github.com/lutuantai95/YCSB-LH.git
 [submodule "benchbase"]
 	path = benchbase
-	url = https://github.com/goetztj/benchbase.git
+	url = https://github.com/lutuantai95/benchbase.git
 [submodule "LV/src/YCSB-C"]
 	path = LV/src/YCSB-C
-	url = https://github.com/goetztj/YCSB-C.git
+	url = https://github.com/lutuantai95/YCSB-C.git
 [submodule "LV/src/rapidjson"]
 	path = LV/src/rapidjson
-	url = https://github.com/Tencent/rapidjson.git
+	url = https://github.com/lutuantai95/rapidjson.git
 [submodule "LV/src/CAB/cab"]
 	path = LV/src/CAB/cab
-	url = https://github.com/alexandervanrenen/cab.git
+	url = https://github.com/lutuantai95/cab.git
 [submodule "trino"]
 	path = trino
-	url = https://github.com/goetztj/trino.git
+	url = https://github.com/lutuantai95/trino.git
